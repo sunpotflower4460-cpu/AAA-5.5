@@ -1,73 +1,103 @@
-# React + TypeScript + Vite
+# 残心 / Zanshin
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 書いたあとにも、心がそこに残るメモ帳。  
+> A note-taking app where the heart lingers, even after the writing ends.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## アプリ概要
 
-## React Compiler
+「残心」は、和の美意識・間・余白・静けさを大切にした、シンプルなiOS向けメモアプリです。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+大量の機能で埋めるのではなく、  
+書くこと、読み返すこと、書いたあとに残る余韻を美しくすることを目指します。
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## セットアップ
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 開発起動
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+## ビルド
+
+```bash
+npm run build
+```
+
+必要に応じて、ローカルでビルド結果を確認します。
+
+```bash
+npm run preview
+```
+
+---
+
+## MVP機能
+
+| 機能 | 説明 |
+|------|------|
+| メモ一覧 | 書いたメモを静かに並べる |
+| メモ作成 | 新しい言葉を置く |
+| メモ編集 | 言葉を直す |
+| メモ削除 | 確認してから言葉を手放す |
+| 自動保存 | 入力後に静かに保存する |
+| 検索 | タイトル・本文から過去の言葉を探す |
+| お気に入り | 大切な言葉に小さな金の印を残す |
+| localStorage保存 | まずはデバイスの中に保存する |
+| iPhone向けUI | 390px前後の画面幅とsafe-areaを意識する |
+| 日本語/英語文言 | 日本語を主に、英語のサブ表現を添える |
+
+---
+
+## 技術方針
+
+- **Vite** — 高速な開発環境
+- **React + TypeScript** — 型安全なコンポーネント設計
+- **Tailwind CSS** — CSS変数と組み合わせ、余白と間を制御する
+- **localStorage** — MVPはローカル保存から開始する
+- **Capacitor（将来）** — ネイティブiOSアプリ化への備え
+
+---
+
+## 開発フェーズ
+
+| フェーズ | 内容 | Cloudflareデプロイ |
+|----------|------|-------------------|
+| **Phase 1** | README/docsに設計を入れる | しない |
+| **Phase 2** | 監査フェーズ（設計確認・微修正） | しない |
+| **Phase 3** | MVPまで一気に作る | MVP完成後のみ |
+
+詳細は [docs/development-phases.md](docs/development-phases.md) を参照。
+
+---
+
+## Cloudflare Pages方針
+
+Phase 3の途中ではCloudflare Pagesへデプロイしません。
+
+MVP完成後、`npm run build` が成功し、READMEとMVP機能が揃っている場合のみ、以下の設定でCloudflare Pagesへ接続できます。
+
+```txt
+Build command: npm run build
+Build output directory: dist
+```
+
+---
+
+## ドキュメント
+
+| ファイル | 内容 |
+|----------|------|
+| [docs/concept.md](docs/concept.md) | 「残心」の思想と世界観 |
+| [docs/design-system.md](docs/design-system.md) | UI/UXとデザインシステム |
+| [docs/mvp-spec.md](docs/mvp-spec.md) | MVP仕様 |
+| [docs/development-phases.md](docs/development-phases.md) | 開発フェーズ |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Cloud Agent / Copilot向け作業ルール |
