@@ -14,21 +14,29 @@
 
 ---
 
-## ターゲット
+## セットアップ
 
-**日本向け**
+```bash
+npm install
+```
 
-- シンプルで美しいメモ帳が欲しい人
-- 和のデザインが好きな人
-- 日記、詩、創作メモ、アイデアメモを書く人
-- 静かで落ち着いたUIを好む人
+## 開発起動
 
-**海外向け**
+```bash
+npm run dev
+```
 
-- Japanese minimalism / Wabi-sabi
-- Zen-inspired writing / Write with stillness
-- Mindful notes / Calm journaling
-- Saved in stillness
+## ビルド
+
+```bash
+npm run build
+```
+
+必要に応じて、ローカルでビルド結果を確認します。
+
+```bash
+npm run preview
+```
 
 ---
 
@@ -39,13 +47,13 @@
 | メモ一覧 | 書いたメモを静かに並べる |
 | メモ作成 | 新しい言葉を置く |
 | メモ編集 | 言葉を直す |
-| メモ削除 | 言葉を手放す |
-| 自動保存 | 静かに、気配なく保存する |
-| 検索 | 過去の言葉を手繰り寄せる |
-| お気に入り | 大切な言葉を残す |
-| ローカル保存 | まずはデバイスの中に |
-| iPhone向けUI | 手のひらに収まる静けさ |
-| 多言語文言設計 | 日本語・英語を意識した言葉づかい |
+| メモ削除 | 確認してから言葉を手放す |
+| 自動保存 | 入力後に静かに保存する |
+| 検索 | タイトル・本文から過去の言葉を探す |
+| お気に入り | 大切な言葉に小さな金の印を残す |
+| localStorage保存 | まずはデバイスの中に保存する |
+| iPhone向けUI | 390px前後の画面幅とsafe-areaを意識する |
+| 日本語/英語文言 | 日本語を主に、英語のサブ表現を添える |
 
 ---
 
@@ -53,9 +61,8 @@
 
 - **Vite** — 高速な開発環境
 - **React + TypeScript** — 型安全なコンポーネント設計
-- **Tailwind CSS** — 余白と間を制御しやすいユーティリティCSS
-- **localStorage / IndexedDB** — MVPはローカル保存から
-- **PWA対応** — ブラウザからでもiOS的体験を
+- **Tailwind CSS** — CSS変数と組み合わせ、余白と間を制御する
+- **localStorage** — MVPはローカル保存から開始する
 - **Capacitor（将来）** — ネイティブiOSアプリ化への備え
 
 ---
@@ -72,11 +79,16 @@
 
 ---
 
-## Cloudflare Pagesルール
+## Cloudflare Pages方針
 
-- Phase 1ではデプロイしない
-- Phase 2でもデプロイしない
-- **Phase 3のMVP完成後のみ**、必要に応じてCloudflare Pagesへのデプロイ準備を行う
+Phase 3の途中ではCloudflare Pagesへデプロイしません。
+
+MVP完成後、`npm run build` が成功し、READMEとMVP機能が揃っている場合のみ、以下の設定でCloudflare Pagesへ接続できます。
+
+```txt
+Build command: npm run build
+Build output directory: dist
+```
 
 ---
 
