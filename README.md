@@ -26,6 +26,8 @@ npm install
 npm run dev
 ```
 
+ローカルでは表示されたURLを開き、iPhone幅を優先して確認します。
+
 ## ビルド
 
 ```bash
@@ -55,6 +57,8 @@ npm run preview
 | iPhone向けUI | 390px前後の画面幅とsafe-areaを意識する |
 | 日本語/英語文言 | 日本語を主に、英語のサブ表現を添える |
 
+Phase 4で、作成・編集・削除・自動保存・localStorage復元・検索・お気に入り・空状態・削除確認・iPhone/PC幅表示の最終調整を確認済みです。
+
 ---
 
 ## 技術方針
@@ -74,6 +78,7 @@ npm run preview
 | **Phase 1** | README/docsに設計を入れる | しない |
 | **Phase 2** | 監査フェーズ（設計確認・微修正） | しない |
 | **Phase 3** | MVPまで一気に作る | MVP完成後のみ |
+| **Phase 4** | 最終調整・デバッグ・Cloudflare Pages準備 | build成功後のみ |
 
 詳細は [docs/development-phases.md](docs/development-phases.md) を参照。
 
@@ -90,6 +95,16 @@ Build command: npm run build
 Build output directory: dist
 ```
 
+環境変数はMVPでは不要です。
+
+手動接続する場合:
+
+1. Cloudflare PagesでこのGitHubリポジトリを接続する。
+2. Framework presetはVite、または上記のbuild設定を手動入力する。
+3. build成功後、発行されたデプロイURLで表示を確認する。
+
+このリポジトリはPhase 4で最終調整済みです。Cloudflare Pages未接続の場合は、上記設定で接続してください。
+
 ---
 
 ## ドキュメント
@@ -100,4 +115,5 @@ Build output directory: dist
 | [docs/design-system.md](docs/design-system.md) | UI/UXとデザインシステム |
 | [docs/mvp-spec.md](docs/mvp-spec.md) | MVP仕様 |
 | [docs/development-phases.md](docs/development-phases.md) | 開発フェーズ |
+| [docs/final-polish-and-deploy-phase-4.md](docs/final-polish-and-deploy-phase-4.md) | Phase 4最終調整・デバッグ・Cloudflare Pages対応レポート |
 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Cloud Agent / Copilot向け作業ルール |
