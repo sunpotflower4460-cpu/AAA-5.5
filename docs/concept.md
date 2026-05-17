@@ -97,3 +97,20 @@
 - 言葉を置く感覚
 - 手のひらの中の余白
 - 使うほどに馴染む、変わらないUI
+
+---
+
+## 海外にも伝わる言葉
+
+海外向けの説明では、以下の言葉を補助的に使う。
+
+- Japanese minimalism
+- Zen-inspired writing
+- Wabi-sabi
+- Mindful notes
+- Calm journaling
+- Write with stillness
+- Saved in stillness
+
+ただし、英語表現を前面に出しすぎない。
+芯にあるのは、日本語の「残心」「間」「余白」である。

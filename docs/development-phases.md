@@ -13,7 +13,7 @@
 
 ## Phase 1: 設計整理
 
-**ステータス：** 🟢 実施中
+**ステータス：** ✅ 完了
 
 ### 目的
 
@@ -40,27 +40,28 @@ docs/development-phases.md
 
 ### 完了条件
 
-- [ ] README.md が作成/更新されている
-- [ ] docs/concept.md がある
-- [ ] docs/design-system.md がある
-- [ ] docs/mvp-spec.md がある
-- [ ] docs/development-phases.md がある
-- [ ] .github/copilot-instructions.md がある
-- [ ] Cloudflareへデプロイしていない
-- [ ] MVP実装を開始していない
-- [ ] 「残心」「間」「余白」「現代和」「黄金比」の方針が明記されている
+- [x] README.md が作成/更新されている
+- [x] docs/concept.md がある
+- [x] docs/design-system.md がある
+- [x] docs/mvp-spec.md がある
+- [x] docs/development-phases.md がある
+- [x] .github/copilot-instructions.md がある
+- [x] Cloudflareへデプロイしていない
+- [x] MVP実装を開始していない
+- [x] 「残心」「間」「余白」「現代和」「黄金比」の方針が明記されている
 
 ---
 
 ## Phase 2: 監査
 
-**ステータス：** ⬜ 未着手
+**ステータス：** 🟢 実施中
 
 ### 目的
 
 - Phase 1の設計にズレがないか確認する
 - MVP実装前の懸念点を洗い出す
 - 実装に入る前に設計を微修正する
+- MVP本体は実装しない
 
 ### 作成予定
 
@@ -78,6 +79,15 @@ docs/audit-phase-2.md
 ### Cloudflareデプロイ
 
 **しない**
+
+### 完了条件
+
+- [ ] docs/audit-phase-2.md が作成されている
+- [ ] README / docs / .github/copilot-instructions.md を監査している
+- [ ] 不足や矛盾があれば設計ドキュメントだけを修正している
+- [ ] MVP範囲を拡大していない
+- [ ] Cloudflareへデプロイしていない
+- [ ] MVP実装を開始していない
 
 ---
 
@@ -133,6 +143,8 @@ src/
 ### Cloudflareデプロイ
 
 **MVP完成後のみ**
+
+MVPが完成するまでは、途中確認や見た目確認のためであってもCloudflare Pagesへデプロイしない。
 
 ---
 

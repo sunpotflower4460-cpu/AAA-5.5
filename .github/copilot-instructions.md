@@ -39,6 +39,7 @@ The goal is to make writing feel **quiet, spacious, and intentional**.
 - ✅ Audit the design from Phase 1
 - ✅ Create `docs/audit-phase-2.md`
 - ❌ Do not deploy
+- ❌ Do not start MVP implementation
 - ❌ Do not overbuild
 
 ### Phase 3
@@ -58,8 +59,10 @@ When implementation begins:
 - **Separate storage logic** into `lib/storage.ts` — never write to localStorage directly in components
 - Keep **design tokens centralized** (colors, spacing, fonts)
 - Use **responsive iPhone-first layout** with safe-area support
+- Keep controls tappable on iPhone and usable while the keyboard is visible
 - Prefer **localStorage at MVP stage**, structured for easy migration to IndexedDB
 - **Avoid adding libraries unless necessary** — prefer built-in browser APIs
+- Build as a Web app first, with future PWA / Capacitor conversion in mind
 
 ---
 
@@ -104,6 +107,9 @@ If a feature makes the app:
 - Not a feature showcase
 - Not a productivity suite
 - Not a Markdown editor
+- Not an AI writing assistant
+- Not an authentication or cloud-sync product
+- Not a subscription or billing product
 - Not a social app
 - Not a Japanese theme park
 - Not a clone of Notion, Bear, or Obsidian
