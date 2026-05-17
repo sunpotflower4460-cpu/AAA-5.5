@@ -1,121 +1,145 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { AppShell } from './components/AppShell'
+import { NoteEditor } from './components/NoteEditor'
+import { NotesList } from './components/NotesList'
+import { copy } from './lib/i18n'
+import { loadNotes, saveNotes } from './lib/storage'
+import type { Note } from './types/note'
+
+const createId = () => {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID()
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+const createBlankNote = (): Note => {
+  const now = new Date().toISOString()
+
+  return {
+    id: createId(),
+    title: '',
+    body: '',
+    createdAt: now,
+    updatedAt: now,
+    isFavorite: false,
+    locale: 'ja',
+  }
+}
+
+const sortNotes = (notes: Note[]) =>
+  [...notes].sort((a, b) => {
+    if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  })
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [notes, setNotes] = useState<Note[]>(() => loadNotes())
+  const [activeNoteId, setActiveNoteId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  const [saveStatus, setSaveStatus] = useState(copy.saved)
+  const hasHydrated = useRef(false)
+  const saveStatusTimer = useRef<number | undefined>(undefined)
+
+  useEffect(() => {
+    if (!hasHydrated.current) {
+      hasHydrated.current = true
+      return
+    }
+
+    const saveTimer = window.setTimeout(() => {
+      saveNotes(notes)
+      setSaveStatus(copy.saved)
+      window.clearTimeout(saveStatusTimer.current)
+      saveStatusTimer.current = window.setTimeout(() => setSaveStatus(copy.saved), 1400)
+    }, 260)
+
+    return () => window.clearTimeout(saveTimer)
+  }, [notes])
+
+  useEffect(() => {
+    return () => window.clearTimeout(saveStatusTimer.current)
+  }, [])
+
+  const activeNote = notes.find((note) => note.id === activeNoteId) ?? null
+
+  const visibleNotes = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase()
+    return sortNotes(notes).filter((note) => {
+      const matchesFavorite = !showFavoritesOnly || note.isFavorite
+      const matchesSearch =
+        normalizedSearch.length === 0 ||
+        `${note.title} ${note.body}`.toLocaleLowerCase().includes(normalizedSearch)
+
+      return matchesFavorite && matchesSearch
+    })
+  }, [notes, search, showFavoritesOnly])
+
+  const markSaving = () => setSaveStatus(copy.saved)
+
+  const handleCreate = () => {
+    const note = createBlankNote()
+    setNotes((current) => [note, ...current])
+    setActiveNoteId(note.id)
+    markSaving()
+  }
+
+  const handleUpdate = (patch: Pick<Note, 'title' | 'body'>) => {
+    if (!activeNoteId) return
+
+    const now = new Date().toISOString()
+    setNotes((current) =>
+      current.map((note) => (note.id === activeNoteId ? { ...note, ...patch, updatedAt: now } : note)),
+    )
+    markSaving()
+  }
+
+  const handleToggleFavorite = () => {
+    if (!activeNoteId) return
+
+    const now = new Date().toISOString()
+    setNotes((current) =>
+      current.map((note) =>
+        note.id === activeNoteId ? { ...note, isFavorite: !note.isFavorite, updatedAt: now } : note,
+      ),
+    )
+    markSaving()
+  }
+
+  const handleDelete = () => {
+    if (!activeNoteId) return
+
+    setNotes((current) => current.filter((note) => note.id !== activeNoteId))
+    setActiveNoteId(null)
+    markSaving()
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <AppShell>
+      {activeNote ? (
+        <NoteEditor
+          note={activeNote}
+          saveStatus={saveStatus}
+          onBack={() => setActiveNoteId(null)}
+          onChange={handleUpdate}
+          onToggleFavorite={handleToggleFavorite}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <NotesList
+          notes={visibleNotes}
+          totalNotes={notes.length}
+          search={search}
+          showFavoritesOnly={showFavoritesOnly}
+          onSearchChange={setSearch}
+          onToggleFavoritesOnly={() => setShowFavoritesOnly((value) => !value)}
+          onCreate={handleCreate}
+          onOpen={setActiveNoteId}
+        />
+      )}
+    </AppShell>
   )
 }
 
