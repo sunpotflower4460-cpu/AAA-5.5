@@ -79,12 +79,12 @@ textarea:focus-visible {
   width: min(100%, 720px);
   min-height: 100svh;
   margin: 0 auto;
-  padding: calc(34px + env(safe-area-inset-top)) 21px calc(89px + env(safe-area-inset-bottom));
+  padding: calc(34px + env(safe-area-inset-top)) clamp(21px, 6vw, 34px) calc(89px + env(safe-area-inset-bottom));
 }
 
 .hero-panel {
   position: relative;
-  padding: 34px 21px;
+  padding: 34px clamp(21px, 6vw, 34px);
   overflow: hidden;
   background: rgba(251, 248, 241, 0.78);
   border: 1px solid var(--color-line);
@@ -220,7 +220,7 @@ textarea:focus-visible {
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 128px;
+  min-height: 144px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
@@ -424,6 +424,31 @@ textarea:focus-visible {
   resize: none;
   font-size: 1rem;
   line-height: 1.618;
+}
+
+@media (max-width: 430px) {
+  .hero-panel h1 {
+    font-size: clamp(2.4rem, 13vw, 3.6rem);
+  }
+
+  .zanshin-mark {
+    width: 55px;
+    height: 55px;
+    opacity: 0.62;
+  }
+
+  .editor__bar {
+    align-items: flex-start;
+  }
+
+  .editor__actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .body-input {
+    min-height: 54svh;
+  }
 }
 
 @media (min-width: 640px) {

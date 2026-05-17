@@ -77,7 +77,7 @@ function App() {
     })
   }, [notes, search, showFavoritesOnly])
 
-  const markSaving = () => setSaveStatus(copy.saved)
+  const markSaving = () => setSaveStatus(copy.saving)
 
   const handleCreate = () => {
     const note = createBlankNote()
