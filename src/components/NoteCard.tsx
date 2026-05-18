@@ -26,6 +26,9 @@ export function NoteCard({ note, onOpen }: NoteCardProps) {
         </span>
         <strong>{title}</strong>
         <span className="note-card__excerpt">{excerpt(note.body)}</span>
+        <span className="note-card__read" aria-hidden="true">
+          ひらく
+        </span>
       </button>
     </article>
   )
