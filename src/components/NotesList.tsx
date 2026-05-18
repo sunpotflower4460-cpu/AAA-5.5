@@ -32,10 +32,12 @@ export function NotesList({
     <main className="notes-list" aria-label="メモ一覧">
       <header className="hero-panel">
         <ZanshinMark />
-        <p className="eyebrow">{copy.appSubtitle}</p>
-        <h1>{copy.appName}</h1>
-        <p>{copy.tagline}</p>
-        <small>{copy.taglineEn}</small>
+        <div className="hero-panel__body">
+          <p className="eyebrow">{copy.appSubtitle}</p>
+          <h1>{copy.appName}</h1>
+          <p>{copy.tagline}</p>
+          <small>{copy.taglineEn}</small>
+        </div>
       </header>
 
       <section className="list-tools" aria-label="検索と表示切り替え">

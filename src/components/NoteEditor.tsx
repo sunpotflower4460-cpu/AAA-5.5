@@ -18,6 +18,8 @@ export function NoteEditor({
   onToggleFavorite,
   onDelete,
 }: NoteEditorProps) {
+  const isSaving = saveStatus === copy.saving
+
   const handleDelete = () => {
     if (window.confirm(copy.releaseConfirm)) {
       onDelete()
@@ -46,7 +48,7 @@ export function NoteEditor({
         </div>
       </header>
 
-      <section className="save-status" aria-live="polite">
+      <section className={isSaving ? 'save-status save-status--saving' : 'save-status'} aria-live="polite">
         <span>{saveStatus}</span>
         <small>{copy.savedEn}</small>
       </section>
