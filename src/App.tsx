@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AppShell } from './components/AppShell'
+import { BottomTabBar, type AppView } from './components/BottomTabBar'
 import { NoteEditor } from './components/NoteEditor'
 import { NotesList } from './components/NotesList'
+import { SearchView } from './components/SearchView'
+import { SettingsView } from './components/SettingsView'
+import { formatUpdatedAt } from './lib/date'
 import { copy } from './lib/i18n'
 import { loadNotes, saveNotes } from './lib/storage'
 import type { Note } from './types/note'
@@ -36,12 +40,15 @@ const sortNotes = (notes: Note[]) =>
 
 function App() {
   const [notes, setNotes] = useState<Note[]>(() => loadNotes())
+  const [activeView, setActiveView] = useState<AppView>('notes')
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
-  const [saveStatus, setSaveStatus] = useState(copy.saved)
+  const [searchFilter, setSearchFilter] = useState<'all' | 'favorites' | 'text' | 'images' | 'date' | 'tags'>('all')
+  const [saveState, setSaveState] = useState<'saving' | 'saved' | 'error'>('saved')
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
+  const [deletedNote, setDeletedNote] = useState<Note | null>(null)
   const hasHydrated = useRef(false)
-  const saveStatusTimer = useRef<number | undefined>(undefined)
+  const undoTimer = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     if (!hasHydrated.current) {
@@ -50,34 +57,42 @@ function App() {
     }
 
     const saveTimer = window.setTimeout(() => {
-      saveNotes(notes)
-      setSaveStatus(copy.saved)
-      window.clearTimeout(saveStatusTimer.current)
-      saveStatusTimer.current = window.setTimeout(() => setSaveStatus(copy.saved), 1400)
+      const saved = saveNotes(notes)
+      if (saved) {
+        setSaveState('saved')
+        setLastSavedAt(new Date().toISOString())
+      } else {
+        setSaveState('error')
+      }
     }, 260)
 
     return () => window.clearTimeout(saveTimer)
   }, [notes])
 
   useEffect(() => {
-    return () => window.clearTimeout(saveStatusTimer.current)
+    return () => window.clearTimeout(undoTimer.current)
   }, [])
 
   const activeNote = notes.find((note) => note.id === activeNoteId) ?? null
 
-  const visibleNotes = useMemo(() => {
+  const sortedNotes = useMemo(() => sortNotes(notes), [notes])
+
+  const filteredSearchNotes = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase()
-    return sortNotes(notes).filter((note) => {
-      const matchesFavorite = !showFavoritesOnly || note.isFavorite
+    return sortedNotes.filter((note) => {
+      const matchesFavorite = searchFilter !== 'favorites' || note.isFavorite
       const matchesSearch =
         normalizedSearch.length === 0 ||
         `${note.title} ${note.body}`.toLocaleLowerCase().includes(normalizedSearch)
 
       return matchesFavorite && matchesSearch
     })
-  }, [notes, search, showFavoritesOnly])
+  }, [search, searchFilter, sortedNotes])
 
-  const markSaving = () => setSaveStatus(copy.saving)
+  const favoriteNotes = useMemo(() => sortedNotes.filter((note) => note.isFavorite), [sortedNotes])
+  const archiveNotes = useMemo(() => sortedNotes.filter((note) => !note.isFavorite), [sortedNotes])
+
+  const markSaving = () => setSaveState('saving')
 
   const handleCreate = () => {
     const note = createBlankNote()
@@ -111,10 +126,32 @@ function App() {
   const handleDelete = () => {
     if (!activeNoteId) return
 
+    const target = notes.find((note) => note.id === activeNoteId) ?? null
+    if (target) {
+      setDeletedNote(target)
+      window.clearTimeout(undoTimer.current)
+      undoTimer.current = window.setTimeout(() => setDeletedNote(null), 6000)
+    }
     setNotes((current) => current.filter((note) => note.id !== activeNoteId))
     setActiveNoteId(null)
     markSaving()
   }
+
+  const handleUndoDelete = () => {
+    if (!deletedNote) return
+    setNotes((current) => [deletedNote, ...current])
+    setDeletedNote(null)
+    window.clearTimeout(undoTimer.current)
+    markSaving()
+  }
+
+  const saveStatus = saveState === 'saving'
+    ? copy.saving
+    : saveState === 'error'
+      ? copy.saveError
+      : lastSavedAt
+        ? `${copy.saved} ・ ${formatUpdatedAt(lastSavedAt, 'ja')}`
+        : copy.saved
 
   return (
     <AppShell>
@@ -122,22 +159,46 @@ function App() {
         <NoteEditor
           note={activeNote}
           saveStatus={saveStatus}
+          saveState={saveState}
           onBack={() => setActiveNoteId(null)}
           onChange={handleUpdate}
           onToggleFavorite={handleToggleFavorite}
           onDelete={handleDelete}
         />
       ) : (
-        <NotesList
-          notes={visibleNotes}
-          totalNotes={notes.length}
-          search={search}
-          showFavoritesOnly={showFavoritesOnly}
-          onSearchChange={setSearch}
-          onToggleFavoritesOnly={() => setShowFavoritesOnly((value) => !value)}
-          onCreate={handleCreate}
-          onOpen={setActiveNoteId}
-        />
+        <>
+          {activeView === 'notes' && (
+            <NotesList
+              favorites={favoriteNotes}
+              archive={archiveNotes}
+              onCreate={handleCreate}
+              onOpen={setActiveNoteId}
+              onOpenSearch={() => setActiveView('search')}
+            />
+          )}
+          {activeView === 'search' && (
+            <SearchView
+              search={search}
+              filter={searchFilter}
+              notes={filteredSearchNotes}
+              favorites={filteredSearchNotes.filter((note) => note.isFavorite)}
+              onSearchChange={setSearch}
+              onFilterChange={setSearchFilter}
+              onOpen={setActiveNoteId}
+            />
+          )}
+          {activeView === 'settings' && <SettingsView />}
+          <BottomTabBar activeView={activeView} onChange={setActiveView} />
+        </>
+      )}
+
+      {deletedNote && (
+        <aside className="undo-toast" role="status" aria-live="polite">
+          <span>{copy.deletedNote}</span>
+          <button type="button" className="quiet-button" onClick={handleUndoDelete}>
+            {copy.undoDelete}
+          </button>
+        </aside>
       )}
     </AppShell>
   )
