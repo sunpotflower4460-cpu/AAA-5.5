@@ -33,12 +33,16 @@ export const loadNotes = (): Note[] => {
   }
 }
 
-export const saveNotes = (notes: Note[]): void => {
-  if (typeof window === 'undefined') return
+export const saveNotes = (notes: Note[]): boolean => {
+  if (typeof window === 'undefined') return false
 
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(notes))
-  } catch {
-    // Saving should never interrupt writing.
+    return true
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error('Failed to save notes to localStorage', error)
+    }
+    return false
   }
 }

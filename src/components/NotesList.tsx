@@ -2,64 +2,78 @@ import type { Note } from '../types/note'
 import { copy } from '../lib/i18n'
 import { EmptyState } from './EmptyState'
 import { NoteCard } from './NoteCard'
-import { SearchBar } from './SearchBar'
 import { ZanshinMark } from './ZanshinMark'
 
 type NotesListProps = {
-  notes: Note[]
-  totalNotes: number
-  search: string
-  showFavoritesOnly: boolean
-  onSearchChange: (value: string) => void
-  onToggleFavoritesOnly: () => void
+  favorites: Note[]
+  archive: Note[]
   onCreate: () => void
   onOpen: (id: string) => void
+  onOpenSearch: () => void
 }
 
 export function NotesList({
-  notes,
-  totalNotes,
-  search,
-  showFavoritesOnly,
-  onSearchChange,
-  onToggleFavoritesOnly,
+  favorites,
+  archive,
   onCreate,
   onOpen,
+  onOpenSearch,
 }: NotesListProps) {
-  const isSearchEmpty = totalNotes > 0 && notes.length === 0
+  const hasNotes = favorites.length > 0 || archive.length > 0
 
   return (
     <main className="notes-list" aria-label="メモ一覧">
-      <header className="hero-panel">
-        <ZanshinMark />
-        <div className="hero-panel__body">
-          <p className="eyebrow">{copy.appSubtitle}</p>
-          <h1>{copy.appName}</h1>
-          <p>{copy.tagline}</p>
-          <small>{copy.taglineEn}</small>
+      <header className="notes-header">
+        <span className="notes-header__menu" aria-hidden="true">
+          ☰
+        </span>
+        <div>
+          <p className="eyebrow">{copy.appSectionTitle}</p>
+        </div>
+        <div className="notes-header__actions">
+          <button type="button" className="icon-button" aria-label={copy.searchTitle} onClick={onOpenSearch}>
+            ⌕
+          </button>
+          <button type="button" className="icon-button icon-button--gold" aria-label={copy.newNote} onClick={onCreate}>
+            +
+          </button>
         </div>
       </header>
 
-      <section className="list-tools" aria-label="検索と表示切り替え">
-        <SearchBar value={search} onChange={onSearchChange} />
-        <button
-          type="button"
-          className={showFavoritesOnly ? 'filter-pill filter-pill--active' : 'filter-pill'}
-          aria-pressed={showFavoritesOnly}
-          onClick={onToggleFavoritesOnly}
-        >
-          {showFavoritesOnly ? copy.favoriteOnly : copy.allNotes}
-        </button>
+      <section className="today-card">
+        <ZanshinMark />
+        <p className="eyebrow">{copy.todayReflection}</p>
+        <h1>{copy.appName}</h1>
+        <p>{copy.tagline}</p>
+        <small>{copy.todayReflectionEn}</small>
       </section>
 
-      {notes.length === 0 ? (
-        <EmptyState isSearch={isSearchEmpty} onCreate={onCreate} />
+      {!hasNotes ? (
+        <EmptyState onCreate={onCreate} />
       ) : (
-        <section className="cards" aria-label="保存されたメモ">
-          {notes.map((note) => (
-            <NoteCard key={note.id} note={note} onOpen={onOpen} />
-          ))}
-        </section>
+        <>
+          <section className="notes-section" aria-label={copy.favorites}>
+            <h2>{copy.favorites}</h2>
+            {favorites.length === 0 ? (
+              <p className="notes-section__empty">{copy.emptyFavorites}</p>
+            ) : (
+              <div className="cards">
+                {favorites.map((note) => (
+                  <NoteCard key={note.id} note={note} onOpen={onOpen} />
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="notes-section" aria-label={copy.allNotes}>
+            <h2>{copy.allNotes}</h2>
+            <div className="cards">
+              {archive.map((note) => (
+                <NoteCard key={note.id} note={note} onOpen={onOpen} />
+              ))}
+            </div>
+          </section>
+        </>
       )}
 
       <button type="button" className="fab" aria-label={copy.newNote} onClick={onCreate}>
