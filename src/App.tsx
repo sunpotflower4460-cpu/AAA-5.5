@@ -37,6 +37,17 @@ const sortNotes = (notes: Note[]) =>
     if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1
     return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   })
+const undoTimeoutMs = 6000
+
+const getSaveStatusMessage = (
+  state: 'saving' | 'saved' | 'error',
+  savedAt: string | null,
+) => {
+  if (state === 'saving') return copy.saving
+  if (state === 'error') return copy.saveError
+  if (!savedAt) return copy.saved
+  return `${copy.saved} ・ ${formatUpdatedAt(savedAt, 'ja')}`
+}
 
 function App() {
   const [notes, setNotes] = useState<Note[]>(() => loadNotes())
@@ -73,6 +84,10 @@ function App() {
     return () => window.clearTimeout(undoTimer.current)
   }, [])
 
+  useEffect(() => {
+    if (!deletedNote) window.clearTimeout(undoTimer.current)
+  }, [deletedNote])
+
   const activeNote = notes.find((note) => note.id === activeNoteId) ?? null
 
   const sortedNotes = useMemo(() => sortNotes(notes), [notes])
@@ -88,6 +103,10 @@ function App() {
       return matchesFavorite && matchesSearch
     })
   }, [search, searchFilter, sortedNotes])
+  const filteredFavoriteNotes = useMemo(
+    () => filteredSearchNotes.filter((note) => note.isFavorite),
+    [filteredSearchNotes],
+  )
 
   const favoriteNotes = useMemo(() => sortedNotes.filter((note) => note.isFavorite), [sortedNotes])
   const archiveNotes = useMemo(() => sortedNotes.filter((note) => !note.isFavorite), [sortedNotes])
@@ -130,7 +149,7 @@ function App() {
     if (target) {
       setDeletedNote(target)
       window.clearTimeout(undoTimer.current)
-      undoTimer.current = window.setTimeout(() => setDeletedNote(null), 6000)
+      undoTimer.current = window.setTimeout(() => setDeletedNote(null), undoTimeoutMs)
     }
     setNotes((current) => current.filter((note) => note.id !== activeNoteId))
     setActiveNoteId(null)
@@ -145,13 +164,7 @@ function App() {
     markSaving()
   }
 
-  const saveStatus = saveState === 'saving'
-    ? copy.saving
-    : saveState === 'error'
-      ? copy.saveError
-      : lastSavedAt
-        ? `${copy.saved} ・ ${formatUpdatedAt(lastSavedAt, 'ja')}`
-        : copy.saved
+  const saveStatus = getSaveStatusMessage(saveState, lastSavedAt)
 
   return (
     <AppShell>
@@ -181,7 +194,7 @@ function App() {
               search={search}
               filter={searchFilter}
               notes={filteredSearchNotes}
-              favorites={filteredSearchNotes.filter((note) => note.isFavorite)}
+              favorites={filteredFavoriteNotes}
               onSearchChange={setSearch}
               onFilterChange={setSearchFilter}
               onOpen={setActiveNoteId}

@@ -1,15 +1,15 @@
 import { copy } from '../lib/i18n'
 
 const rows = [
-  'Appearance',
-  'Font',
-  'Text Size',
-  'Japanese Typography',
-  'Save & Backup',
-  'Passcode Lock',
-  'Help Center',
-  'Contact',
-  'About',
+  copy.settingAppearance,
+  copy.settingFont,
+  copy.settingTextSize,
+  copy.settingTypography,
+  copy.settingBackup,
+  copy.settingPasscode,
+  copy.settingHelp,
+  copy.settingContact,
+  copy.settingAbout,
 ]
 
 export function SettingsView() {
@@ -27,10 +27,10 @@ export function SettingsView() {
 
       <section className="settings-list" aria-label="Settings items">
         {rows.map((row) => (
-          <button key={row} type="button" className="settings-row">
+          <div key={row} className="settings-row" aria-disabled="true">
             <span>{row}</span>
             <span aria-hidden="true">›</span>
-          </button>
+          </div>
         ))}
       </section>
     </main>

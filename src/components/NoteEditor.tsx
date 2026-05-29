@@ -23,7 +23,8 @@ export function NoteEditor({
 }: NoteEditorProps) {
   const isSaving = saveState === 'saving'
   const isError = saveState === 'error'
-  const characterCount = note.title.trim().length + note.body.trim().length
+  const totalCharacterCount = note.title.trim().length + note.body.trim().length
+  const saveStatusClass = `save-status${isSaving ? ' save-status--saving' : ''}${isError ? ' save-status--error' : ''}`
 
   const handleDelete = () => {
     if (window.confirm(copy.releaseConfirm)) {
@@ -47,10 +48,10 @@ export function NoteEditor({
           >
             <span aria-hidden="true">◆</span>
           </button>
-          <button type="button" className="icon-button" aria-label="history">
+          <button type="button" className="icon-button" aria-label={copy.history} disabled>
             ↺
           </button>
-          <button type="button" className="icon-button" aria-label="menu">
+          <button type="button" className="icon-button" aria-label={copy.more} disabled>
             …
           </button>
           <button type="button" className="danger-button" aria-label={copy.delete} onClick={handleDelete}>
@@ -59,17 +60,14 @@ export function NoteEditor({
         </div>
       </header>
 
-      <section
-        className={isSaving ? 'save-status save-status--saving' : isError ? 'save-status save-status--error' : 'save-status'}
-        aria-live="polite"
-      >
+      <section className={saveStatusClass} aria-live="polite">
         <span>{saveStatus}</span>
         <small>{copy.savedEn}</small>
       </section>
 
       <section className="editor__meta">
         <span>{formatUpdatedAt(note.updatedAt, 'ja')}</span>
-        <span>{characterCount} chars</span>
+        <span>{totalCharacterCount} chars</span>
       </section>
 
       <label className="field-label" htmlFor="note-title">
@@ -97,16 +95,16 @@ export function NoteEditor({
       />
 
       <footer className="editor-toolbar" aria-label="Editor tools">
-        <button type="button" className="icon-button" aria-label="text style">
+        <button type="button" className="icon-button" aria-label={copy.toolAa} disabled>
           Aa
         </button>
-        <button type="button" className="icon-button" aria-label="list">
+        <button type="button" className="icon-button" aria-label={copy.toolList} disabled>
           ≣
         </button>
-        <button type="button" className="icon-button" aria-label="image">
+        <button type="button" className="icon-button" aria-label={copy.toolImage} disabled>
           ◇
         </button>
-        <button type="button" className="icon-button" aria-label="pen">
+        <button type="button" className="icon-button" aria-label={copy.toolPen} disabled>
           ✎
         </button>
       </footer>

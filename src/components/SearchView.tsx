@@ -16,12 +16,12 @@ type SearchViewProps = {
 }
 
 const filters: Array<{ id: SearchFilter; label: string }> = [
-  { id: 'all', label: 'All' },
-  { id: 'favorites', label: 'Favorites' },
-  { id: 'text', label: 'Text' },
-  { id: 'images', label: 'Images' },
-  { id: 'date', label: 'Date' },
-  { id: 'tags', label: 'Tags' },
+  { id: 'all', label: copy.filterAll },
+  { id: 'favorites', label: copy.filterFavorites },
+  { id: 'text', label: copy.filterText },
+  { id: 'images', label: copy.filterImages },
+  { id: 'date', label: copy.filterDate },
+  { id: 'tags', label: copy.filterTags },
 ]
 
 export function SearchView({
@@ -42,13 +42,12 @@ export function SearchView({
 
       <SearchBar value={search} onChange={onSearchChange} />
 
-      <div className="filter-chips" role="tablist" aria-label="Search filters">
+      <div className="filter-chips" role="group" aria-label="Search filters">
         {filters.map((item) => (
           <button
             key={item.id}
             type="button"
-            role="tab"
-            aria-selected={filter === item.id}
+            aria-pressed={filter === item.id}
             className={filter === item.id ? 'chip chip--active' : 'chip'}
             onClick={() => onFilterChange(item.id)}
           >
@@ -60,7 +59,7 @@ export function SearchView({
       <section className="search-section" aria-label={copy.favorites}>
         <h2>{copy.favorites}</h2>
         {favorites.length === 0 ? (
-          <p className="search-view__empty">{copy.noResultsEn}</p>
+          <p className="search-view__empty">{copy.emptyFavorites}</p>
         ) : (
           <div className="cards">
             {favorites.map((note) => (

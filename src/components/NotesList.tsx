@@ -24,9 +24,9 @@ export function NotesList({
   return (
     <main className="notes-list" aria-label="メモ一覧">
       <header className="notes-header">
-        <button type="button" className="icon-button" aria-label="menu">
-          〓
-        </button>
+        <span className="notes-header__menu" aria-hidden="true">
+          ☰
+        </span>
         <div>
           <p className="eyebrow">{copy.appSectionTitle}</p>
         </div>
@@ -55,7 +55,7 @@ export function NotesList({
           <section className="notes-section" aria-label={copy.favorites}>
             <h2>{copy.favorites}</h2>
             {favorites.length === 0 ? (
-              <p className="notes-section__empty">{copy.noResultsEn}</p>
+              <p className="notes-section__empty">{copy.emptyFavorites}</p>
             ) : (
               <div className="cards">
                 {favorites.map((note) => (
